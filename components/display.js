@@ -38,6 +38,8 @@ export const initDisplayLogic = () => {
     const btnFoto = document.getElementById('btnFoto');
     const btnPermitir = document.getElementById("permissions-button");
 
+    clearFoto();
+
     // Intentamos acceder a la camara y mostramos una feed de video
     btnPermitir.addEventListener('click', () => {
         navigator.mediaDevices
@@ -52,18 +54,24 @@ export const initDisplayLogic = () => {
     });
 
     btnFoto.addEventListener('click', (ev) => {
+        if (video.srcObject == null) {
+            clearFoto();
+            alert("Primero debes permitir el acceso a la cámara");
+            return;
+        }
         tomarFoto();
         ev.preventDefault();
     });
 };
 
+// Mostrar el canvas vacio cuando no se haya tomado ninguna foto
 function clearFoto() {
   const context = canvas.getContext("2d");
   context.fillStyle = "#aaaaaa";
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   const data = canvas.toDataURL("image/png");
-  photo.setAttribute("src", data);
+  foto.setAttribute("src", data);
 }
 
 const tomarFoto = () => {
