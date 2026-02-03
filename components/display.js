@@ -1,6 +1,8 @@
 // En este componente se mostrará la imagen capturada
 // y, cuando llegue el momento, la feed de video
 
+import {getFaceLandmarker, createFaceLandmarker} from "../services/vision.js";
+
 
 // Este estilo de hacer los componentes lo he sacado de un tutorial de YouTube
 // Es una manera mas corta de definir una funcion. "display" es el nombre, () son los argumentos que recibe,
@@ -24,6 +26,13 @@ const display = () => {
         <div class="output">
         <img id="foto" class ="mx-auto my-4 rounded-xl border-4 border-zinc-900" src="" alt="La imagen capturada aparecerá aquí" />
         </div>
+        <button id="btnDetectar" class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Detectar rostro">face</button>
+
+        <div>
+        <h2>Resultados de la detección:</h2>
+        <h1 id="numPuntos">Numero de puntos detectados: </h1>
+        <h1 id="resultado" class="my-4"></h1>
+        </div>
     </div>`;
 };
 
@@ -31,12 +40,21 @@ export default display;
 
 
 
-export const initDisplayLogic = () => {
+export const initDisplayLogic = async () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const foto = document.getElementById('foto');
     const btnFoto = document.getElementById('btnFoto');
     const btnPermitir = document.getElementById("permissions-button");
+    const btnDetectar = document.getElementById("btnDetectar");
+    let imageURL;
+    let caraDetectada = false;
+    const resultado = document.getElementById("resultado");
+    const numPuntos = document.getElementById("numPuntos");
+
+    await createFaceLandmarker();
+
+    const faceLandmarker = getFaceLandmarker();
 
     clearFoto();
 
@@ -53,13 +71,25 @@ export const initDisplayLogic = () => {
         });
     });
 
+    // Tomar foto al pulsar el boton
     btnFoto.addEventListener('click', (ev) => {
         if (video.srcObject == null) {
             clearFoto();
             alert("Primero debes permitir el acceso a la cámara");
             return;
         }
-        tomarFoto();
+        imageURL = tomarFoto();
+        
+        ev.preventDefault();
+    });
+
+    // Llamar al facelandmarker al pulsar el boton
+    btnDetectar.addEventListener('click', (ev) => {
+        if (!foto.src || foto.src.length === 0) {
+            alert("Primero debes tomar una foto");
+            return;
+        }
+        detectarRostro(foto, faceLandmarker);
         ev.preventDefault();
     });
 };
@@ -81,6 +111,23 @@ const tomarFoto = () => {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageURL = canvas.toDataURL('image/png');
     foto.setAttribute('src', imageURL);
+
+    return imageURL;
     }
+
+const detectarRostro = async (imagenFuente, faceLandmarker) => {
+    if (!faceLandmarker) {
+        console.error("Espera a que el Face Landmarker esté inicializado antes de clicar!");
+        return;
+    }
+
+    const faceLandmarkerResult = await faceLandmarker.detect(imagenFuente);
+    resultado.innerText = JSON.stringify(faceLandmarkerResult, null, 2);
+    numPuntos.innerText = `Número de puntos detectados: ${faceLandmarkerResult.faceLandmarks.length}`;
+    caraDetectada = true;
+
+
+}
+
 
     
