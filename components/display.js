@@ -1,7 +1,8 @@
 // En este componente se mostrará la imagen capturada
 // y, cuando llegue el momento, la feed de video
 
-import {getFaceLandmarker, createFaceLandmarker} from "../services/vision.js";
+import {getFaceLandmarker, createFaceLandmarker, drawFaceLandmarks} from "../services/vision.js";
+import { DrawingUtils } from "@mediapipe/tasks-vision";
 
 
 // Este estilo de hacer los componentes lo he sacado de un tutorial de YouTube
@@ -22,7 +23,7 @@ const display = () => {
         <button class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Permitir acceso a la cámara" id="permissions-button">video_camera_front</button>
         </div>
 
-        <canvas id="canvas" class="hidden "></canvas>
+        <canvas id="canvas" class="hidden mx-auto my-4 rounded-xl border-4 border-zinc-900"></canvas>
         <div class="output">
         <img id="foto" class ="mx-auto my-4 rounded-xl border-4 border-zinc-900" src="" alt="La imagen capturada aparecerá aquí" />
         </div>
@@ -43,6 +44,8 @@ export default display;
 export const initDisplayLogic = async () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
+    const context = canvas.getContext("2d");
+
     const foto = document.getElementById('foto');
     const btnFoto = document.getElementById('btnFoto');
     const btnPermitir = document.getElementById("permissions-button");
@@ -53,8 +56,53 @@ export const initDisplayLogic = async () => {
     const numPuntos = document.getElementById("numPuntos");
 
     await createFaceLandmarker();
+    const drawingUtils = new DrawingUtils(context);
+    let faceLandmarkerResult = undefined;
 
     const faceLandmarker = getFaceLandmarker();
+
+    const tomarFoto = () => {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageURL = canvas.toDataURL('image/png');
+        foto.setAttribute('src', imageURL);
+    
+        canvas.classList.add("hidden");
+        foto.classList.remove("hidden");
+
+        return imageURL;
+    }
+
+    // Mostrar el canvas vacio cuando no se haya tomado ninguna foto
+    function clearFoto() {
+        context.fillStyle = "#aaaaaa";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+      
+        const data = canvas.toDataURL("image/png");
+        foto.setAttribute("src", data);
+    }
+    
+    const detectarRostro = async (imagenFuente, faceLandmarker) => {
+        if (!faceLandmarker) {
+            console.error("Espera a que el Face Landmarker esté inicializado antes de clicar!");
+            return;
+        }
+    
+        faceLandmarkerResult = await faceLandmarker.detect(imagenFuente);
+        resultado.innerText = JSON.stringify(faceLandmarkerResult, null, 2);
+        numPuntos.innerText = `Número de puntos detectados: ${faceLandmarkerResult.faceLandmarks[0].length}`;
+            
+            
+        canvas.classList.remove("hidden");
+        foto.classList.add("hidden");
+        caraDetectada = true;
+
+        if (caraDetectada) {
+            drawFaceLandmarks(context, faceLandmarkerResult);
+        }
+    }
 
     clearFoto();
 
@@ -93,41 +141,6 @@ export const initDisplayLogic = async () => {
         ev.preventDefault();
     });
 };
-
-// Mostrar el canvas vacio cuando no se haya tomado ninguna foto
-function clearFoto() {
-  const context = canvas.getContext("2d");
-  context.fillStyle = "#aaaaaa";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  const data = canvas.toDataURL("image/png");
-  foto.setAttribute("src", data);
-}
-
-const tomarFoto = () => {
-    const context = canvas.getContext('2d');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageURL = canvas.toDataURL('image/png');
-    foto.setAttribute('src', imageURL);
-
-    return imageURL;
-    }
-
-const detectarRostro = async (imagenFuente, faceLandmarker) => {
-    if (!faceLandmarker) {
-        console.error("Espera a que el Face Landmarker esté inicializado antes de clicar!");
-        return;
-    }
-
-    const faceLandmarkerResult = await faceLandmarker.detect(imagenFuente);
-    resultado.innerText = JSON.stringify(faceLandmarkerResult, null, 2);
-    numPuntos.innerText = `Número de puntos detectados: ${faceLandmarkerResult.faceLandmarks.length}`;
-    caraDetectada = true;
-
-
-}
 
 
     
