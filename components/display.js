@@ -29,10 +29,30 @@ const display = () => {
         </div>
         <button id="btnDetectar" class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Detectar rostro">face</button>
 
-        <div>
-        <h2>Resultados de la detección:</h2>
-        <h1 id="numPuntos">Numero de puntos detectados: </h1>
-        <h1 id="resultado" class="my-4"></h1>
+        <div class="container mx-auto mt-4">
+            <h2 class="text-xl font-bold mb-2">Resultados de la detección:</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div class="border-2 border-zinc-900 rounded-xl p-4">
+                    <h3 class="font-bold mb-2">Landmarks <span id="numPuntos" class="text-sm font-normal"></span></h3>
+                    <div class="h-64 overflow-y-auto bg-gray-100 p-2 rounded border border-gray-300 font-mono text-xs">
+                         <ul id="landmarksList" class="list-none"></ul>
+                    </div>
+                </div>
+
+                <div class="border-2 border-zinc-900 rounded-xl p-4">
+                    <h3 class="font-bold mb-2">Blendshapes <span id="numBlendshapes" class="text-sm font-normal"></span></h3>
+                    <div class="h-64 overflow-y-auto bg-gray-100 p-2 rounded border border-gray-300 font-mono text-xs">
+                        <ul id="blendshapesList" class="list-none"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <details class="text-left mt-4 border-2 border-zinc-900 rounded-xl p-2">
+                <summary class="cursor-pointer font-bold">Ver JSON completo</summary>
+                <div class="bg-gray-100 p-4 rounded border border-gray-300 overflow-x-auto mt-2">
+                    <pre id="resultado" class="text-xs"></pre>
+                </div>
+            </details>
         </div>
     </div>`;
 };
@@ -92,7 +112,44 @@ export const initDisplayLogic = async () => {
     
         faceLandmarkerResult = await faceLandmarker.detect(imagenFuente);
         resultado.innerText = JSON.stringify(faceLandmarkerResult, null, 2);
-        numPuntos.innerText = `Número de puntos detectados: ${faceLandmarkerResult.faceLandmarks[0].length}`;
+        
+        const landmarksList = document.getElementById('landmarksList');
+        const numPuntos = document.getElementById("numPuntos");
+        landmarksList.innerHTML = '';
+        
+        if (faceLandmarkerResult.faceLandmarks && faceLandmarkerResult.faceLandmarks.length > 0) {
+            const landmarks = faceLandmarkerResult.faceLandmarks[0];
+            numPuntos.innerText = `(${landmarks.length})`;
+            landmarks.forEach((landmark, index) => {
+                const li = document.createElement('li');
+                li.innerText = `#${index}: x=${landmark.x.toFixed(4)}, y=${landmark.y.toFixed(4)}, z=${landmark.z.toFixed(4)}`;
+                landmarksList.appendChild(li);
+            });
+        } else {
+             numPuntos.innerText = "(0)";
+        }
+
+        const blendshapesList = document.getElementById('blendshapesList');
+        const numBlendshapes = document.getElementById('numBlendshapes');
+        blendshapesList.innerHTML = '';
+
+        if (faceLandmarkerResult.faceBlendshapes && faceLandmarkerResult.faceBlendshapes.length > 0) {
+            const blendshapes = faceLandmarkerResult.faceBlendshapes[0].categories;
+            numBlendshapes.innerText = `(${blendshapes.length})`;
+            blendshapes.sort((a, b) => b.score - a.score); 
+            
+            blendshapes.forEach((shape) => {
+                const li = document.createElement('li');
+                li.innerText = `${shape.categoryName}: ${shape.score.toFixed(4)}`;
+                if(shape.score > 0.4) {
+                    li.style.fontWeight = "bold";
+                    li.style.color = "green";
+                }
+                blendshapesList.appendChild(li);
+            });
+        } else {
+            if (numBlendshapes) numBlendshapes.innerText = "(0)";
+        }
             
             
         canvas.classList.remove("hidden");
@@ -134,6 +191,11 @@ export const initDisplayLogic = async () => {
     // Llamar al facelandmarker al pulsar el boton
     btnDetectar.addEventListener('click', (ev) => {
         if (!foto.src || foto.src.length === 0) {
+            alert("Primero debes tomar una foto");
+            return;
+        }
+
+        if (foto.classList.contains("hidden")) {
             alert("Primero debes tomar una foto");
             return;
         }
