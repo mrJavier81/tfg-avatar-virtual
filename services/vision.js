@@ -18,7 +18,7 @@ export async function createFaceLandmarker() {
     faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {baseOptions: {
         modelAssetPath: './app/shared/models/face_landmarker.task',
         delegate: "GPU"},
-        //outputFaceBlendshapes: true,
+        outputFaceBlendshapes: true,
         runningMode,
         numFaces: 1
     });
