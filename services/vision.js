@@ -19,6 +19,7 @@ export async function createFaceLandmarker() {
         modelAssetPath: './app/shared/models/face_landmarker.task',
         delegate: "GPU"},
         outputFaceBlendshapes: true,
+        outputFacialTransformationMatrixes: true,
         runningMode,
         numFaces: 1
     });
