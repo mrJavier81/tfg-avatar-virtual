@@ -37,7 +37,7 @@ export function drawFaceLandmarks(canvasContext, faceLandmarkerResult) {
         drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION,
             { color: "#C0C0C070", lineWidth: 1 });
         
-        /*    drawingUtils.drawConnectors(
+        drawingUtils.drawConnectors(
         landmarks,
         FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
         { color: "#FF3030" }
@@ -74,6 +74,6 @@ export function drawFaceLandmarks(canvasContext, faceLandmarkerResult) {
         landmarks,
         FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
         { color: "#30FF30" }
-        );*/
+        );
     }
 }   

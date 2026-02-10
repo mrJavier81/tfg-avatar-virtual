@@ -132,19 +132,15 @@ export const initDisplayLogic = async () => {
         const blendshapesList = document.getElementById('blendshapesList');
         const numBlendshapes = document.getElementById('numBlendshapes');
         blendshapesList.innerHTML = '';
-
+        
         if (faceLandmarkerResult.faceBlendshapes && faceLandmarkerResult.faceBlendshapes.length > 0) {
-            const blendshapes = faceLandmarkerResult.faceBlendshapes[0].categories;
+            const blendshapes = faceLandmarkerResult.faceBlendshapes[0].categories; 
             numBlendshapes.innerText = `(${blendshapes.length})`;
             blendshapes.sort((a, b) => b.score - a.score); 
             
             blendshapes.forEach((shape) => {
                 const li = document.createElement('li');
                 li.innerText = `${shape.categoryName}: ${shape.score.toFixed(4)}`;
-                if(shape.score > 0.4) {
-                    li.style.fontWeight = "bold";
-                    li.style.color = "green";
-                }
                 blendshapesList.appendChild(li);
             });
         } else {
