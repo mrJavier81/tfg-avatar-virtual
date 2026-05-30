@@ -21,6 +21,7 @@ const display = () => {
         <div>
         <button class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Tomar foto" id="btnFoto">camera_alt</button>
         <button class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Permitir acceso a la cámara" id="permissions-button">video_camera_front</button>
+        <button class= "material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Tiempo real" id="btnTiempoReal">face_retouching_natural</button>
         </div>
 
         <canvas id="canvas" class="hidden mx-auto my-4 rounded-xl border-4 border-zinc-900"></canvas>
@@ -28,6 +29,8 @@ const display = () => {
         <img id="foto" class ="mx-auto my-4 rounded-xl border-4 border-zinc-900" src="" alt="La imagen capturada aparecerá aquí" />
         </div>
         <button id="btnDetectar" class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Detectar rostro">face</button>
+
+        <canvas id="canvasTiempoReal" class=" mx-auto my-4 rounded-xl border-4 border-zinc-900"></canvas>
 
         <div class="container mx-auto mt-4">
             <h2 class="text-xl font-bold mb-2">Resultados de la detección:</h2>
@@ -64,18 +67,26 @@ export default display;
 export const initDisplayLogic = async () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const context = canvas.getContext("2d");
+    const videoTiempoReal = document.getElementById('videoTiempoReal');
+    const canvasTiempoReal = document.getElementById('canvasTiempoReal');
+    const contextTiempoReal = canvasTiempoReal.getContext('2d');
 
+    const context = canvas.getContext("2d");
     const foto = document.getElementById('foto');
+
     const btnFoto = document.getElementById('btnFoto');
     const btnPermitir = document.getElementById("permissions-button");
     const btnDetectar = document.getElementById("btnDetectar");
+    const btnTiempoReal = document.getElementById("btnTiempoReal");
+
     let imageURL;
     let caraDetectada = false;
+    let ultimoFrame = -1; // Para determinar que el video sigue funcionando en activarTiempoReal
+    let results = undefined;
     const resultado = document.getElementById("resultado");
     const numPuntos = document.getElementById("numPuntos");
 
-    await createFaceLandmarker();
+    await createFaceLandmarker("VIDEO");
     const drawingUtils = new DrawingUtils(context);
     let faceLandmarkerResult = undefined;
 
@@ -93,6 +104,75 @@ export const initDisplayLogic = async () => {
         foto.classList.remove("hidden");
 
         return imageURL;
+    }
+
+    const llamarFaceLandmarker = async (ev) => {
+        if (!foto.src || foto.src.length === 0) {
+            alert("Primero debes tomar una foto");
+            return;
+        }
+
+        if (foto.classList.contains("hidden")) {
+            alert("Primero debes tomar una foto");
+            return;
+        }
+        detectarRostro(foto, faceLandmarker);
+        ev.preventDefault();
+    }
+
+    const llamarCamaraVideo = async () => {
+        navigator.mediaDevices
+        .getUserMedia({ video: true, audio: false })
+        .then((stream) => {
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch((error)  => {
+            console.error("Error al acceder a la cámara: ", error);
+        });
+    }
+
+    const activarTiempoReal = async (ev) => {
+
+        console.log("Llamado a activarTiempoReal")
+
+        if(!video.srcObject){
+            alert("Primero debes permitir el acceso a la cámara");
+            return;
+        }
+
+
+        canvasTiempoReal.width = video.videoWidth;
+        canvasTiempoReal.height = video.videoHeight;
+
+        canvasTiempoReal.classList.remove("hidden");
+
+        dibujarMeshTiempoReal();
+
+        
+
+        ev.preventDefault();
+    }
+
+    const dibujarMeshTiempoReal = async () => {
+
+        console.log("Llamado a dibujarMeshTiempoReal")
+        let tiempoInicio = performance.now();
+        if(ultimoFrame !== video.currentTime){
+            console.log("Funcionamiento correcto de dibujarMeshTIempoReal")
+            ultimoFrame = video.currentTime;
+            results = faceLandmarker.detectForVideo(video, tiempoInicio)
+
+        }
+
+        contextTiempoReal.clearRect(0,0, canvasTiempoReal.width, canvasTiempoReal.height);
+
+        if(results && results.faceLandmarks){
+            drawFaceLandmarks(contextTiempoReal, results);
+        }
+
+        window.requestAnimationFrame(dibujarMeshTiempoReal);
+
     }
 
     // Mostrar el canvas vacio cuando no se haya tomado ninguna foto
@@ -160,17 +240,7 @@ export const initDisplayLogic = async () => {
     clearFoto();
 
     // Intentamos acceder a la camara y mostramos una feed de video
-    btnPermitir.addEventListener('click', () => {
-        navigator.mediaDevices
-        .getUserMedia({ video: true, audio: false })
-        .then((stream) => {
-            video.srcObject = stream;
-            video.play();
-        })
-        .catch((error)  => {
-            console.error("Error al acceder a la cámara: ", error);
-        });
-    });
+    btnPermitir.addEventListener('click', () => llamarCamaraVideo());
 
     // Tomar foto al pulsar el boton
     btnFoto.addEventListener('click', (ev) => {
@@ -185,19 +255,12 @@ export const initDisplayLogic = async () => {
     });
 
     // Llamar al facelandmarker al pulsar el boton
-    btnDetectar.addEventListener('click', (ev) => {
-        if (!foto.src || foto.src.length === 0) {
-            alert("Primero debes tomar una foto");
-            return;
-        }
+    btnDetectar.addEventListener('click', (ev) => llamarFaceLandmarker(ev));
 
-        if (foto.classList.contains("hidden")) {
-            alert("Primero debes tomar una foto");
-            return;
-        }
-        detectarRostro(foto, faceLandmarker);
-        ev.preventDefault();
-    });
+    btnTiempoReal.addEventListener('click',(ev) => activarTiempoReal(ev))
+
+
+    
 };
 
 

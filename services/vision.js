@@ -8,7 +8,7 @@ let runningMode = "IMAGE";
 
 // Funcion sacada del ejemplo de MediaPipe otorgado por Google
 // Carga el modelo de Face Landmarker y espera a que este listo para usarse
-export async function createFaceLandmarker() {
+export async function createFaceLandmarker(mode = "IMAGE") {
 
     const filesetResolver = await
     FilesetResolver.forVisionTasks(
@@ -20,7 +20,7 @@ export async function createFaceLandmarker() {
         delegate: "GPU"},
         outputFaceBlendshapes: true,
         outputFacialTransformationMatrixes: true,
-        runningMode,
+        runningMode: mode,
         numFaces: 1
     });
 
