@@ -16,7 +16,10 @@ const display = () => {
         
         <h1 >Pulsa el botón para tomar una foto</h1>
         
-        <video id="video" class="mx-auto my-4 rounded-xl border-4 border-zinc-900">Captura de video no disponible</video>
+        <div class="relative w-fit mx-auto my-4">
+            <video id="video" class="block rounded-xl border-4 border-zinc-900">Captura de video no disponible</video>
+            <canvas id="canvasTiempoReal" class="hidden absolute top-0 left-0 w-full h-full pointer-events-none rounded-xl"></canvas>
+        </div>
 
         <div>
         <button class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Tomar foto" id="btnFoto">camera_alt</button>
@@ -29,8 +32,6 @@ const display = () => {
         <img id="foto" class ="mx-auto my-4 rounded-xl border-4 border-zinc-900" src="" alt="La imagen capturada aparecerá aquí" />
         </div>
         <button id="btnDetectar" class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Detectar rostro">face</button>
-
-        <canvas id="canvasTiempoReal" class=" mx-auto my-4 rounded-xl border-4 border-zinc-900"></canvas>
 
         <div class="container mx-auto mt-4">
             <h2 class="text-xl font-bold mb-2">Resultados de la detección:</h2>
