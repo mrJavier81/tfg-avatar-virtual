@@ -1,6 +1,7 @@
 // En este componente se mostrará la imagen capturada
 // y, cuando llegue el momento, la feed de video
 
+import { obtenerEmocionAproximada } from "../services/gesture_recognition.js";
 import {getFaceLandmarker, createFaceLandmarker, drawFaceLandmarks} from "../services/vision.js";
 import { DrawingUtils } from "@mediapipe/tasks-vision";
 
@@ -35,6 +36,12 @@ const display = () => {
 
         <div class="container mx-auto mt-4">
             <h2 class="text-xl font-bold mb-2">Resultados de la detección:</h2>
+
+            <div class="gap-4">
+                <h3 class="font-bold mb-2">
+                    <span id="emocionDetectada" class="text-sm font-normal"></span>
+                </h3>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div class="border-2 border-zinc-900 rounded-xl p-4">
                     <h3 class="font-bold mb-2">Landmarks <span id="numPuntos" class="text-sm font-normal"></span></h3>
@@ -86,6 +93,7 @@ export const initDisplayLogic = async () => {
     let results = undefined;
     const resultado = document.getElementById("resultado");
     const numPuntos = document.getElementById("numPuntos");
+    const emocionDetectada = document.getElementById("emocionDetectada");
 
     await createFaceLandmarker("VIDEO");
     const drawingUtils = new DrawingUtils(context);
@@ -148,19 +156,20 @@ export const initDisplayLogic = async () => {
 
         canvasTiempoReal.classList.remove("hidden");
 
-        dibujarMeshTiempoReal();
+        procesarFrameTiempoReal();
+
+
 
         
 
         ev.preventDefault();
     }
 
-    const dibujarMeshTiempoReal = async () => {
+    const procesarFrameTiempoReal = async () =>{
 
-        console.log("Llamado a dibujarMeshTiempoReal")
         let tiempoInicio = performance.now();
         if(ultimoFrame !== video.currentTime){
-            console.log("Funcionamiento correcto de dibujarMeshTIempoReal")
+            //console.log("Funcionamiento correcto de dibujarMeshTIempoReal")
             ultimoFrame = video.currentTime;
             results = faceLandmarker.detectForVideo(video, tiempoInicio)
 
@@ -168,13 +177,19 @@ export const initDisplayLogic = async () => {
 
         contextTiempoReal.clearRect(0,0, canvasTiempoReal.width, canvasTiempoReal.height);
 
+        if(results && results.faceBlendshapes.length > 0){
+            const emocionAproximada = obtenerEmocionAproximada(results);
+            emocionDetectada.innerText = emocionAproximada.emocion;
+        }
+
         if(results && results.faceLandmarks){
             drawFaceLandmarks(contextTiempoReal, results);
         }
 
-        window.requestAnimationFrame(dibujarMeshTiempoReal);
+        window.requestAnimationFrame(procesarFrameTiempoReal);
 
     }
+
 
     // Mostrar el canvas vacio cuando no se haya tomado ninguna foto
     function clearFoto() {
