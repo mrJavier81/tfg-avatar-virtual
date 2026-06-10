@@ -41,6 +41,7 @@ const display = () => {
                 <h3 class="font-bold mb-2">
                     <span id="emocionDetectada" class="text-sm font-normal"></span>
                 </h3>
+
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div class="border-2 border-zinc-900 rounded-xl p-4">
@@ -180,6 +181,23 @@ export const initDisplayLogic = async () => {
         if(results && results.faceBlendshapes.length > 0){
             const emocionAproximada = obtenerEmocionAproximada(results);
             emocionDetectada.innerText = emocionAproximada.emocion;
+
+        
+            // Actualizar la lista completa de blendshapes en tiempo real
+            const blendshapesList = document.getElementById('blendshapesList');
+            const numBlendshapes = document.getElementById('numBlendshapes');
+            if (blendshapesList && numBlendshapes) {
+                const blendshapes = [...results.faceBlendshapes[0].categories]; 
+                numBlendshapes.innerText = `(${blendshapes.length})`;
+                blendshapes.sort((a, b) => b.score - a.score); 
+                
+                blendshapesList.innerHTML = '';
+                blendshapes.forEach((shape) => {
+                    const li = document.createElement('li');
+                    li.innerText = `${shape.categoryName}: ${shape.score.toFixed(4)}`;
+                    blendshapesList.appendChild(li);
+                });
+            }
         }
 
         if(results && results.faceLandmarks){
