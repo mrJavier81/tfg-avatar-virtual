@@ -33,7 +33,7 @@ export const obtenerEmocionAproximada = (results) => {
 
     // Determinar la emoción dominante superando un umbral mínimo
     let dominante = "Neutral";
-    let maxScore = 0.50; 
+    let maxScore = 0.65; 
 
     for (const [emocion, score] of Object.entries(emociones)) {
         if (score > maxScore) {
