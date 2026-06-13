@@ -2,7 +2,7 @@ import display, { initDisplayLogic } from "./display.js"
 
 const mainMenu = () => {
     return /*HTML*/`
-                <div class="flex flex-col items-center justify-center">
+                <div class="flex flex-col items-center justify-center font-bold">
                     <h1>Menú Principal</h1>
                 </div>
                 <div id="main-menu-buttons" class="flex flex-col items-center justify-center ">
