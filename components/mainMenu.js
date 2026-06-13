@@ -2,6 +2,7 @@ import display, { initDisplayLogic } from "./display.js"
 
 const mainMenu = () => {
     return /*HTML*/`
+            <div class="">
                 <div class="flex flex-col items-center justify-center font-bold">
                     <h1>Menú Principal</h1>
                 </div>
@@ -9,6 +10,7 @@ const mainMenu = () => {
                     <button id="display-button" class="bg-blue-500 text-white p-2 m-2 rounded">Replicación de emociones</button>
                     <button id="recon-button" class="bg-blue-500 text-white p-2 m-2 rounded">Reconocimiento de emociones</button>
                 </div>
+            </div>
                     `;
 };
 
@@ -19,8 +21,6 @@ export const initMainMenuLogic = () => {
     const reconButton = document.getElementById("recon-button");
 
     displayButton.addEventListener("click", () => {
-        const root = document.getElementById("root");
-        root.innerHTML = display();
-        initDisplayLogic();
+        window.location.hash = "#/display";
     });
 }
