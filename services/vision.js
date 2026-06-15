@@ -6,14 +6,22 @@ let runningMode = "IMAGE";
 
 
 
+
 // Funcion sacada del ejemplo de MediaPipe otorgado por Google
 // Carga el modelo de Face Landmarker y espera a que este listo para usarse
 export async function createFaceLandmarker(mode = "IMAGE") {
+
+    if(faceLandmarker != null && runningMode != mode) {
+        await faceLandmarker.close();
+        faceLandmarker = null;
+    }
 
     const filesetResolver = await
     FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
      );
+    
+    runningMode = mode;
 
     faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {baseOptions: {
         modelAssetPath: './app/shared/models/face_landmarker.task',
