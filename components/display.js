@@ -23,16 +23,12 @@ const display = () => {
         </div>
 
         <div>
-        <button class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Tomar foto" id="btnFoto">camera_alt</button>
         <button class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Permitir acceso a la cámara" id="permissions-button">video_camera_front</button>
         <button class= "material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Tiempo real" id="btnTiempoReal">face_retouching_natural</button>
         </div>
 
         <canvas id="canvas" class="hidden mx-auto my-4 rounded-xl border-4 border-zinc-900"></canvas>
-        <div class="output">
-        <img id="foto" class ="mx-auto my-4 rounded-xl border-4 border-zinc-900" src="" alt="La imagen capturada aparecerá aquí" />
-        </div>
-        <button id="btnDetectar" class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Detectar rostro">face</button>
+        
 
         <div class="container mx-auto mt-4">
             <h2 class="text-xl font-bold mb-2">Resultados de la detección:</h2>
@@ -81,9 +77,9 @@ export const initDisplayLogic = async () => {
     const contextTiempoReal = canvasTiempoReal.getContext('2d');
 
     const context = canvas.getContext("2d");
-    const foto = document.getElementById('foto');
+    //const foto = document.getElementById('foto');
 
-    const btnFoto = document.getElementById('btnFoto');
+    //const btnFoto = document.getElementById('btnFoto');
     const btnPermitir = document.getElementById("permissions-button");
     const btnDetectar = document.getElementById("btnDetectar");
     const btnTiempoReal = document.getElementById("btnTiempoReal");
@@ -102,7 +98,7 @@ export const initDisplayLogic = async () => {
 
     const faceLandmarker = getFaceLandmarker();
 
-    const tomarFoto = () => {
+    /*const tomarFoto = () => {
         const context = canvas.getContext('2d');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -114,9 +110,9 @@ export const initDisplayLogic = async () => {
         foto.classList.remove("hidden");
 
         return imageURL;
-    }
+    }*/
 
-    const llamarFaceLandmarker = async (ev) => {
+    /*const llamarFaceLandmarker = async (ev) => {
         if (!foto.src || foto.src.length === 0) {
             alert("Primero debes tomar una foto");
             return;
@@ -128,7 +124,7 @@ export const initDisplayLogic = async () => {
         }
         detectarRostro(foto, faceLandmarker);
         ev.preventDefault();
-    }
+    }*/
 
     const llamarCamaraVideo = async () => {
         navigator.mediaDevices
@@ -210,13 +206,13 @@ export const initDisplayLogic = async () => {
 
 
     // Mostrar el canvas vacio cuando no se haya tomado ninguna foto
-    function clearFoto() {
+    /*function clearFoto() {
         context.fillStyle = "#aaaaaa";
         context.fillRect(0, 0, canvas.width, canvas.height);
       
         const data = canvas.toDataURL("image/png");
         foto.setAttribute("src", data);
-    }
+    }*/
     
     const detectarRostro = async (imagenFuente, faceLandmarker) => {
         if (!faceLandmarker) {
@@ -271,13 +267,13 @@ export const initDisplayLogic = async () => {
         }
     }
 
-    clearFoto();
+    //clearFoto();
 
     // Intentamos acceder a la camara y mostramos una feed de video
     btnPermitir.addEventListener('click', () => llamarCamaraVideo());
 
     // Tomar foto al pulsar el boton
-    btnFoto.addEventListener('click', (ev) => {
+    /*btnFoto.addEventListener('click', (ev) => {
         if (video.srcObject == null) {
             clearFoto();
             alert("Primero debes permitir el acceso a la cámara");
@@ -286,10 +282,10 @@ export const initDisplayLogic = async () => {
         imageURL = tomarFoto();
         
         ev.preventDefault();
-    });
+    });*/
 
     // Llamar al facelandmarker al pulsar el boton
-    btnDetectar.addEventListener('click', (ev) => llamarFaceLandmarker(ev));
+    //btnDetectar.addEventListener('click', (ev) => llamarFaceLandmarker(ev));
 
     btnTiempoReal.addEventListener('click',(ev) => activarTiempoReal(ev))
 
