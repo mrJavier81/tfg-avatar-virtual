@@ -9,6 +9,7 @@ const mainMenu = () => {
                 <div id="main-menu-buttons" class="flex flex-col items-center justify-center ">
                     <button id="display-button" class="bg-blue-500 text-white p-2 m-2 rounded">Replicación de emociones</button>
                     <button id="recon-button" class="bg-blue-500 text-white p-2 m-2 rounded">Reconocimiento de emociones</button>
+                    <button id="calib-button" class="bg-blue-500 text-white p-2 m-2 rounded">Calibrar</button>
                 </div>
             </div>
                     `;
@@ -19,8 +20,14 @@ export default mainMenu;
 export const initMainMenuLogic = () => {
     const displayButton = document.getElementById("display-button");
     const reconButton = document.getElementById("recon-button");
+    const calibButton = document.getElementById("calib-button")
 
     displayButton.addEventListener("click", () => {
         window.location.hash = "#/display";
     });
+
+    calibButton.addEventListener("click", ()=> {
+        window.location.hash = "#/calibration";
+    });
+
 }
