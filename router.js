@@ -1,5 +1,6 @@
 import mainMenu, { initMainMenuLogic } from "./components/mainMenu.js"
 import display, { initDisplayLogic } from "./components/display.js"
+import calibrationComponent, { initCalibrationLogic } from "./components/calibrationComponent.js"
 
 
 const routes = {
@@ -10,6 +11,10 @@ const routes = {
     '/display': {
         render: display,
         init: initDisplayLogic
+    },
+    '/calibration': {
+        render: calibrationComponent,
+        init: initCalibrationLogic
     },
     // '/recon': { render: reconMenu, init: reconInit }, // TODO: Descomentar cuando esté
     '404': {
