@@ -1,3 +1,4 @@
+import { setNeutralBaseline } from "../services/store.js";
 import {getFaceLandmarker, createFaceLandmarker, drawFaceLandmarks} from "../services/vision.js"; 
 
 const calibrationComponent = () => {
@@ -54,7 +55,11 @@ export const initCalibrationLogic = async () => {
         timer = 0;
         enProceso = true;
 
+        faceLandmarkerResults = []; 
+
         procesarFrame();
+
+        
         
         
     });
@@ -95,8 +100,12 @@ export const initCalibrationLogic = async () => {
         }
 
         if (timer > timerLimit){
-            valorNeutral = obtenerValorNeutral();
+            
             tiempoRestante.innerText = "Calibración completada!"
+
+            valorNeutral = obtenerValorNeutral();
+            setNeutralBaseline(valorNeutral);
+
             startCalibButton.disabled = false;
             enProceso = false;
             console.log("Calibracion completada");
@@ -108,7 +117,7 @@ export const initCalibrationLogic = async () => {
         
         try {
             const timestampActual = performance.now();
-            faceLandmarkerResult = await faceLandmarker.detectForVideo(document.getElementById("calibration-video"), timestampActual);
+            faceLandmarkerResult = await faceLandmarker.detectForVideo(video, timestampActual);
             
             if(faceLandmarkerResult && faceLandmarkerResult.faceBlendshapes.length > 0){
                 faceLandmarkerResults.push(faceLandmarkerResult.faceBlendshapes[0]);
