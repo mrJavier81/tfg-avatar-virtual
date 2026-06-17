@@ -4,6 +4,7 @@
 import { obtenerEmocionAproximada } from "../services/gesture_recognition.js";
 import {getFaceLandmarker, createFaceLandmarker, drawFaceLandmarks} from "../services/vision.js";
 import { DrawingUtils } from "@mediapipe/tasks-vision";
+import {getNeutralBaseline} from "../services/store.js";
 
 
 // Este estilo de hacer los componentes lo he sacado de un tutorial de YouTube
@@ -175,7 +176,36 @@ export const initDisplayLogic = async () => {
         contextTiempoReal.clearRect(0,0, canvasTiempoReal.width, canvasTiempoReal.height);
 
         if(results && results.faceBlendshapes.length > 0){
-            const emocionAproximada = obtenerEmocionAproximada(results);
+            const baseNeutral = getNeutralBaseline();
+            let categoriasNormalizadas = [];
+
+            if (baseNeutral) {
+                console.log("Valor calibrado correcto, Usando base neutral");
+                // Si hay calibración, restamos el valor base a cada blendshape actual
+                categoriasNormalizadas = results.faceBlendshapes[0].categories.map(shape => {
+                    const baseScore = baseNeutral[shape.categoryName] || 0;
+                    return {
+                        categoryName: shape.categoryName,
+                        displayName: shape.displayName,
+                        // Math.max evita valores negativos si la expresión es más relajada que en la calibración
+                        score: Math.max(0, shape.score - baseScore) 
+                    };
+                });
+            } else {
+                // Fallback de seguridad: si no se ha calibrado, usamos los valores puros
+                console.log("<AVISO> Valor calibrado no encontrado");
+                categoriasNormalizadas = [...results.faceBlendshapes[0].categories];
+            }
+
+            // 3. Reconstruimos una estructura clonada con los datos normalizados para el reconocedor
+            const resultadoNormalizado = {
+                ...results,
+                faceBlendshapes: [{
+                    categories: categoriasNormalizadas
+                }]
+            };
+
+            const emocionAproximada = obtenerEmocionAproximada(resultadoNormalizado);
             emocionDetectada.innerText = emocionAproximada.emocion;
 
         
