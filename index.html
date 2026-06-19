@@ -3,8 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
+    <style>
+      @font-face {
+        font-family: 'Lexend';
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+        src: url('./assets/fonts/Lexend-VariableFont_wght.ttf') format('truetype');
+      }
+    </style>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Lexend', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    
+    
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Avatar Virtual</title>
 </head>
