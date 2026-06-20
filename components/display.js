@@ -4,7 +4,7 @@
 import { obtenerEmocionAproximada } from "../services/gesture_recognition.js";
 import {getFaceLandmarker, createFaceLandmarker, drawFaceLandmarks} from "../services/vision.js";
 import { DrawingUtils } from "@mediapipe/tasks-vision";
-import {getNeutralBaseline} from "../services/store.js";
+import {getNeutralBaseline, isCalibrated} from "../services/store.js";
 import { exercisePanel, exerciseButton, initExerciseLogic, tickEjercicio, setEmocionDetectada } from "./exercise.js";
 
 
@@ -17,8 +17,14 @@ import { exercisePanel, exerciseButton, initExerciseLogic, tickEjercicio, setEmo
 const display = () => {
     return /* HTML */ `<div class="container mx-auto text-center">
         
-        <h1 >Pulsa el botón para tomar una foto</h1>
-        
+        <div>
+            <h1 class="font-bold text-xl">Practica Reconocer Emociones</h1>
+        </div>
+        <div class="container mx-auto mt-4">
+            <h1 id="instrucciones" ></h1>
+            <button id="ir-calibracion" class="bg-blue-500 text-white p-2 m-2 rounded hidden">Sí</button>
+            <button id="no-calibracion" class="bg-blue-500 text-white p-2 m-2 rounded hidden">No</button>
+        </div>
         <div class="relative w-fit mx-auto my-4">
             <video id="video" class="block rounded-xl border-4 border-zinc-900">Captura de video no disponible</video>
             <canvas id="canvasTiempoReal" class="hidden absolute top-0 left-0 w-full h-full pointer-events-none rounded-xl"></canvas>
@@ -75,17 +81,26 @@ export default display;
 
 
 export const initDisplayLogic = async () => {
+
+    
+    
+    
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const videoTiempoReal = document.getElementById('videoTiempoReal');
     const canvasTiempoReal = document.getElementById('canvasTiempoReal');
     const contextTiempoReal = canvasTiempoReal.getContext('2d');
+    const textoInstrucciones = document.getElementById('instrucciones');
 
     const context = canvas.getContext("2d");
 
     const btnPermitir = document.getElementById("permissions-button");
     const btnDetectar = document.getElementById("btnDetectar");
     const btnTiempoReal = document.getElementById("btnTiempoReal");
+    const btnCalibrar = document.getElementById("ir-calibracion");
+    const btnNoCalibrar = document.getElementById("no-calibracion");
+
+    
 
     let imageURL;
     let caraDetectada = false;
@@ -100,6 +115,15 @@ export const initDisplayLogic = async () => {
     let faceLandmarkerResult = undefined;
 
     const faceLandmarker = getFaceLandmarker();
+    
+
+    if(!isCalibrated()){
+        console.error("<AVISO> NO CALIBRADO!")
+        textoInstrucciones.innerText = "Es recomendable realizar la calibración antes de continuar.\n¿Quieres proceder con ella?"
+        btnCalibrar.classList.remove("hidden");
+        btnNoCalibrar.classList.remove("hidden");
+
+    }
 
 
     const llamarCamaraVideo = async () => {
@@ -267,7 +291,15 @@ export const initDisplayLogic = async () => {
 
 
     // Intentamos acceder a la camara y mostramos una feed de video
-    btnPermitir.addEventListener('click', () => llamarCamaraVideo());
+
+    llamarCamaraVideo();
+
+    btnCalibrar.addEventListener('click',(ev) => window.location.hash = "#/calibration")
+    btnNoCalibrar.addEventListener('click',(ev)=> {
+        btnCalibrar.classList.add("hidden");
+        btnNoCalibrar.classList.add("hidden");
+        textoInstrucciones.innerText = ""
+    })
 
     btnTiempoReal.addEventListener('click',(ev) => activarTiempoReal(ev))
 
