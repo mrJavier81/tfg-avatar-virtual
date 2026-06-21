@@ -5,12 +5,12 @@ const calibrationComponent = () => {
 
     
     return /*HTML*/`
-    <div class="flex flex-col items-center font-bold">
+    <div class="flex flex-col items-center font-bold text-xl">
         <h1>Pantalla de calibración</h1>
     </div>
     <div class="flex flex-col items-center justify-center">
         <p>Mantén una expresión neutral durante 3 segundos</p>
-        <video videoCalibration id="calibration-video" width="640" height="480" class="border border-gray-300"></video>
+        <video videoCalibration id="calibration-video" width="640" height="480" class="block rounded-xl border-4 border-zinc-900"></video>
         <p id="tiempo">Tiempo restante: </p>
         <button id="start-calibration-button" class="bg-blue-500 text-white p-2 m-2 rounded">Iniciar calibración</button>
     </div>
