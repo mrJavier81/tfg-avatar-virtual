@@ -18,7 +18,7 @@ const display = () => {
     return /* HTML */ `<div class="container mx-auto text-center">
         
         <div>
-            <h1 class="font-bold text-xl">Practica Reconocer Emociones</h1>
+            <h1 class="font-bold text-xl">Practica Imitar Emociones</h1>
         </div>
         <div class="container mx-auto mt-4">
             <h1 id="instrucciones" ></h1>
