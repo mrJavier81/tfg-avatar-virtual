@@ -93,12 +93,12 @@ export const exercisePanel = () =>
                 
             </div>
 
-            <!-- Línea decorativa de progreso en el borde superior -->
+        
             
         </div>
     </div>`;
 
-    // Botón para lanzar la sesión (se añade junto a los otros botones de display.js)
+    // Boton para comenzar los ejercicios. Se inyecta en la vista de display.js
     export const exerciseButton = () => /* HTML */ `
     <button
         class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4"
@@ -111,7 +111,7 @@ export const exercisePanel = () =>
 // emocion detectada en tiempo real por display.js
 let emocionEnTiempoReal = "Neutral";
 
-// display.js llamará a esto en cada frame para mantener sincronía
+// display.js llamará a esto en cada frame para mantener sincronia
 export const setEmocionDetectada = (emocion) => {
     emocionEnTiempoReal = emocion;
 };
@@ -184,7 +184,7 @@ const cargarEjercicio = () => {
         document.getElementById("exDescripcion").textContent = ejercicio.descripcion;
         document.getElementById("exTiempoTotal").textContent = `${getTiempoRequerido()}s`;
 
-        // Contador (ej: "3 / 6")
+        // contador de ejrcicios 
         document.getElementById("exCounter").textContent =
             `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
     }else{

@@ -1,16 +1,16 @@
 // Gestiona el estado y la lógica de los ejercicios de emociones
-// Las emociones disponibles vienen de gesture_recognition.js (modelo de Paul Ekman)
+// Las emociones disponibles vienen de gesture_recognition.js 
 
 const EJERCICIOS = [
     { emocion: "Alegría",   emoji: "😄", descripcion: "Sonríe ampliamente y eleva las mejillas" },
     { emocion: "Sorpresa",  emoji: "😮", descripcion: "Abre bien los ojos y la boca" },
     { emocion: "Enfado",    emoji: "😠", descripcion: "Frunce el ceño y aprieta los labios" },
-    { emocion: "Tristeza",  emoji: "😢", descripcion: "Baja las comisuras de la boca" },
+    { emocion: "Tristeza",  emoji: "😢", descripcion: "Baja las comisuras de la boca y entrecierra los ojos" },
     { emocion: "Miedo",     emoji: "😨", descripcion: "Abre los ojos y estira la boca hacia los lados" },
     { emocion: "Asco",      emoji: "🤢", descripcion: "Arruga la nariz y eleva el labio superior" },
 ];
 
-const TIEMPO_REQUERIDO = 5; // segundos que hay que mantener la emoción
+const TIEMPO_REQUERIDO = 5; 
 
 
 let estado = {
@@ -87,7 +87,7 @@ export const siguienteEjercicio = () => {
     iniciarEjercicioActual();
 };
 
-// Getters
+
 export const getEjercicioActual = () =>
     estado.ejerciciosOrdenados[estado.indiceActual] ?? null;
 
