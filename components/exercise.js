@@ -20,24 +20,19 @@ export const exercisePanel = () =>
     /* HTML */ `
     <div id="exercisePanel" class="hidden container mx-auto mt-8 max-w-lg">
 
-        <!-- Cabecera de sesión -->
+        
         <div class="flex items-center justify-between mb-4 px-1">
             <span class="text-sm text-zinc-500 font-mono" id="exCounter"></span>
-            <button
-                id="btnCerrarEjercicio"
-                class="material-icons text-zinc-400 hover:text-zinc-700 transition-colors"
-                title="Cerrar ejercicios"
-            >close</button>
         </div>
 
-        <!-- Tarjeta principal del ejercicio -->
+
         <div id="exCard"
             class="relative border-2 border-zinc-900 rounded-2xl p-8 text-center bg-white shadow-sm overflow-hidden"
         >
-            <!-- Estado: en curso -->
+        
             <div id="exEnCurso">
-                <p class="text-xs uppercase tracking-widest text-zinc-400 mb-2 font-mono">
-                    Mantén esta expresión
+                <p class="text-xs uppercase   mb-2 ">
+                    Intenta replicar la emoción
                 </p>
                 <div class="text-7xl my-4 select-none" id="exEmoji"></div>
                 <h2 class="text-3xl font-bold tracking-tight mb-1" id="exEmocion"></h2>
@@ -45,7 +40,7 @@ export const exercisePanel = () =>
 
                 <!-- Emoción detectada ahora mismo -->
                 <div class="flex items-center justify-center gap-2 mb-6 text-sm">
-                    <span class="text-zinc-400">Tú ahora:</span>
+                    <span class="text-zinc-400">Emoción detectada:</span>
                     <span id="exDetectada"
                         class="font-semibold text-zinc-700 transition-all duration-200"
                     >—</span>
@@ -65,12 +60,19 @@ export const exercisePanel = () =>
                         <span id="exTiempoActual">0.0s</span>
                         <span id="exTiempoTotal"></span>
                     </div>
+                    <div id="saltarEx" class="flex justify-between">
+                        <button
+                            id="btnSaltar"
+                            class="w-full py-3 rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white font-semibold transition-colors">
+                            Saltar ejercicio
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Estado: completado -->
+         
             <div id="exCompletado" class="hidden">
-                <div class="text-6xl mb-4 animate-bounce">🎉</div>
+
                 <h2 class="text-2xl font-bold mb-2">¡Bien hecho!</h2>
                 <p class="text-zinc-500 text-sm mb-6">
                     Has mantenido <strong id="exEmocionLogro"></strong> durante
@@ -78,18 +80,21 @@ export const exercisePanel = () =>
                 </p>
                 <button
                     id="btnSiguiente"
-                    class="w-full py-3 rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white font-semibold transition-colors"
-                >
-                    Siguiente emoción →
+                    class="w-full py-3 rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white font-semibold transition-colors">
+                    Siguiente emoción
+                
                 </button>
+                <button
+                    id="btnMenu"
+                    class="w-full py-3 rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white font-semibold transition-colors hidden">
+                    Volver al menú
+                
+                </button>
+                
             </div>
 
             <!-- Línea decorativa de progreso en el borde superior -->
-            <div
-                id="exBordeSuperior"
-                class="absolute top-0 left-0 h-1 rounded-t-2xl transition-all duration-200"
-                style="width: 0%; background: #18181b;"
-            ></div>
+            
         </div>
     </div>`;
 
@@ -121,7 +126,7 @@ const refrescarUI = () => {
     const hayMatch = emocionEnTiempoReal === ejercicio.emocion;
 
     document.getElementById("exBarra").style.width = `${progreso}%`;
-    document.getElementById("exBordeSuperior").style.width = `${progreso}%`;
+  
 
     const exDetectada = document.getElementById("exDetectada");
     const exMatchIcon = document.getElementById("exMatchIcon");
@@ -153,35 +158,41 @@ const mostrarCompletado = () => {
 
   
     document.getElementById("exBarra").style.width = "100%";
-    document.getElementById("exBordeSuperior").style.width = "100%";
+
     document.getElementById("exBarra").style.background = "#059669"; // emerald-600
-    document.getElementById("exBordeSuperior").style.background = "#059669";
+  
 };
 
 
 const cargarEjercicio = () => {
-    const ejercicio = getEjercicioActual();
-    if (!ejercicio) return;
+
+    if(getIndiceActual() < getTotalEjercicios() - 1){
+        const ejercicio = getEjercicioActual();
+        if (!ejercicio) return;
 
 
-    document.getElementById("exEnCurso").classList.remove("hidden");
-    document.getElementById("exCompletado").classList.add("hidden");
-    document.getElementById("exBarra").style.width = "0%";
-    document.getElementById("exBarra").style.background = "#18181b";
-    document.getElementById("exBordeSuperior").style.width = "0%";
-    document.getElementById("exBordeSuperior").style.background = "#18181b";
-    document.getElementById("exTiempoActual").textContent = "0.0s";
-    document.getElementById("exMatchIcon").textContent = "　";
+        document.getElementById("exEnCurso").classList.remove("hidden");
+        document.getElementById("exCompletado").classList.add("hidden");
+        document.getElementById("exBarra").style.width = "0%";
+        document.getElementById("exBarra").style.background = "#18181b";
+    
+        document.getElementById("exTiempoActual").textContent = "0.0s";
+        document.getElementById("exMatchIcon").textContent = "　";
 
-    document.getElementById("exEmoji").textContent = ejercicio.emoji;
-    document.getElementById("exEmocion").textContent = ejercicio.emocion;
-    document.getElementById("exDescripcion").textContent = ejercicio.descripcion;
-    document.getElementById("exTiempoTotal").textContent =
-        `${getTiempoRequerido()}s`;
+        document.getElementById("exEmoji").textContent = ejercicio.emoji;
+        document.getElementById("exEmocion").textContent = ejercicio.emocion;
+        document.getElementById("exDescripcion").textContent = ejercicio.descripcion;
+        document.getElementById("exTiempoTotal").textContent = `${getTiempoRequerido()}s`;
 
-    // Contador (ej: "3 / 6")
-    document.getElementById("exCounter").textContent =
-        `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
+        // Contador (ej: "3 / 6")
+        document.getElementById("exCounter").textContent =
+            `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
+    }else{
+        mostrarCompletado();
+        btnSiguiente.classList.add("hidden");
+        btnMenu.classList.remove("hidden");
+
+    }
 };
 
 // Bucle de actualización; se engancha con requestAnimationFrame de display.js
@@ -205,6 +216,8 @@ export const initExerciseLogic = () => {
     const btnEjercicio = document.getElementById("btnEjercicio");
     const btnCerrar = document.getElementById("btnCerrarEjercicio");
     const btnSiguiente = document.getElementById("btnSiguiente");
+    const btnSaltar = document.getElementById("btnSaltar");
+    const btnMenu = document.getElementById("btnMenu");
 
     if (!panel || !btnEjercicio) return;
 
@@ -214,14 +227,22 @@ export const initExerciseLogic = () => {
         panel.classList.remove("hidden");
     });
 
-    btnCerrar.addEventListener("click", () => {
-        panel.classList.add("hidden");
+    btnSiguiente.addEventListener("click", () => {
+        if(getIndiceActual() < getTotalEjercicios() - 1){
+            siguienteEjercicio();
+            cargarEjercicio();
+            document.getElementById("exCounter").textContent =
+                `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
+        }else{
+            btnSiguiente.innerText = "Volver al menú principal"
+        }
+
     });
 
-    btnSiguiente.addEventListener("click", () => {
+    btnSaltar.addEventListener("click", () => {
         siguienteEjercicio();
         cargarEjercicio();
         document.getElementById("exCounter").textContent =
-            `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
-    });
+                `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
+    })
 };
