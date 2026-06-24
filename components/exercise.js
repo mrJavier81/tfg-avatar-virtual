@@ -38,7 +38,7 @@ export const exercisePanel = () =>
                 <h2 class="text-3xl font-bold tracking-tight mb-1" id="exEmocion"></h2>
                 <p class="text-sm text-zinc-500 mb-6" id="exDescripcion"></p>
 
-                <!-- Emoción detectada ahora mismo -->
+                <!-- Emocion detectada ahora mismo -->
                 <div class="flex items-center justify-center gap-2 mb-6 text-sm">
                     <span class="text-zinc-400">Emoción detectada:</span>
                     <span id="exDetectada"
@@ -47,7 +47,7 @@ export const exercisePanel = () =>
                     <span id="exMatchIcon" class="text-lg">　</span>
                 </div>
 
-                <!-- Barra de progreso -->
+                <!--barra de progreso -->
                 <div class="relative">
                     <div class="w-full bg-zinc-100 rounded-full h-4 overflow-hidden border border-zinc-200">
                         <div
@@ -101,10 +101,10 @@ export const exercisePanel = () =>
     // Boton para comenzar los ejercicios. Se inyecta en la vista de display.js
     export const exerciseButton = () => /* HTML */ `
     <button
-        class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4"
+        class="rounded-xl bg-[#5881aa] hover:bg-[#73a1ca] text-white p-4"
         title="Ejercicio de emociones"
         id="btnEjercicio"
-    >sentiment_very_satisfied</button>`;
+    >Comenzar ejercicios</button>`;
 
 
 

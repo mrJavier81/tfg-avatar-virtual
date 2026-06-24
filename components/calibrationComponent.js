@@ -8,15 +8,17 @@ const calibrationComponent = () => {
     <div class="flex flex-col items-center font-bold text-xl">
         <h1>Pantalla de calibración</h1>
     </div>
-    <div class="flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center justify-center m-4">
         <p>Mantén una expresión neutral durante 3 segundos</p>
-        <video videoCalibration id="calibration-video" width="640" height="480" class="block rounded-xl border-4 border-zinc-900"></video>
-        <p id="tiempo">Tiempo restante: </p>
-        <button id="start-calibration-button" class="bg-blue-500 text-white p-2 m-2 rounded">Iniciar calibración</button>
+        <video videoCalibration id="calibration-video" width="640" height="480" class="block rounded-xl border-4 border-zinc-900 m-4"></video>
+        <p id="tiempo" class="hidden text-xl">Tiempo restante: </p>
+        <button id="start-calibration-button" class="bg-[#5881aa] hover:bg-[#73a1ca] text-white p-4 m-2 rounded">Iniciar calibración</button>
     </div>
-    <div class="flex flex-col items-center justify-center">
-        <p>Resultados:</p>
-        <p id=resultados></p>
+    <div id=divResultados class="flex flex-col items-center justify-center hidden">
+        
+        <button id=btnProceder class= "bg-[#5881aa] hover:bg-[#73a1ca] text-white p-4 m-2 rounded">Continuar</button>
+        <p id=resultados>¡Ya puedes proceder a la siguiente pantalla!</p>
+        <p>O volver a realizar la calibración</p>
     </div>
     `;
 }
@@ -25,9 +27,11 @@ export default calibrationComponent;
 
 export const initCalibrationLogic = async () => {
     const startCalibButton = document.getElementById("start-calibration-button");
+    const btnProceder = document.getElementById("btnProceder");
     const tiempoRestante = document.getElementById("tiempo")
     const resultadosText = document.getElementById("resultados");
     const video = document.getElementById("calibration-video");
+    const divResultados = document.getElementById("divResultados");
     await createFaceLandmarker("VIDEO");
     
 
@@ -48,21 +52,27 @@ export const initCalibrationLogic = async () => {
         })
         .catch((error)  => {
             console.error("Error al acceder a la cámara: ", error);
+            alert("No se pudo acceder a la cámara. Permitela o reinicia la página.");
         });
 
     startCalibButton.addEventListener("click", () => {
         startCalibButton.disabled = true;
         timer = 0;
         enProceso = true;
+        tiempoRestante.classList.remove("hidden");
+        
+        if(!divResultados.classList.contains("hidden"))
+            divResultados.classList.add("hidden");
+
 
         faceLandmarkerResults = []; 
 
         procesarFrame();
-
-        
-        
-        
     });
+
+    btnProceder.addEventListener("click", () => {
+        window.location.hash = "#/display";
+    })
 
     function obtenerValorNeutral() {
         
@@ -101,15 +111,17 @@ export const initCalibrationLogic = async () => {
 
         if (timer > timerLimit){
             
-            tiempoRestante.innerText = "Calibración completada!"
+            tiempoRestante.innerText = "¡Calibración completada!"
 
             valorNeutral = obtenerValorNeutral();
             setNeutralBaseline(valorNeutral);
 
             startCalibButton.disabled = false;
+            startCalibButton.innerText = "Reintentar calibración"
             enProceso = false;
             console.log("Calibracion completada");
-            resultadosText.innerText = JSON.stringify(valorNeutral, null, 2);
+            divResultados.classList.remove("hidden");
+            console.log("Valor calibracion: " + JSON.stringify(valorNeutral, null, 2))
             return;
         }
         const segundos = Math.ceil((timerLimit - timer) / 1000);

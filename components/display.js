@@ -18,22 +18,36 @@ const display = () => {
     return /* HTML */ `<div class="container mx-auto text-center">
         
         <div>
-            <h1 class="font-bold text-xl">Practica Imitar Emociones</h1>
+            <h1 class="font-bold text-xl">Practica imitar emociones</h1>
+            <h2>Si no se detecta ninguna emoción, prueba a reiniciar el detector facial</h2>
         </div>
-        <div class="container mx-auto mt-4">
+
+        <div id="divInstrucciones" class="container mx-auto mt-4 border-4 border-red-500 hidden">
             <h1 id="instrucciones" ></h1>
-            <button id="ir-calibracion" class="bg-blue-500 text-white p-2 m-2 rounded hidden">Sí</button>
-            <button id="no-calibracion" class="bg-blue-500 text-white p-2 m-2 rounded hidden">No</button>
+            <button id="ir-calibracion" class="bg-[#5881aa] hover:bg-[#73a1ca] text-white p-2 m-2 rounded ">Sí</button>
+            <button id="no-calibracion" class="bg-[#5881aa] hover:bg-[#73a1ca] text-white p-2 m-2 rounded ">No</button>
         </div>
-        <div class="relative w-fit mx-auto my-4">
-            <video id="video" class="block rounded-xl border-4 border-zinc-900">Captura de video no disponible</video>
+        <div class="relative w-fit mx-auto my-4 ">
+            <video id="video" class="block rounded-xl border-4 border-zinc-900 flex items-center h-full">Captura de video no disponible</video>
             <canvas id="canvasTiempoReal" class="hidden absolute top-0 left-0 w-full h-full pointer-events-none rounded-xl"></canvas>
         </div>
 
+        <div class="container mx-auto mt-4">
+            <h2 class="text-xl font-bold mb-2">Resultados de la detección:</h2>
+
+            <div class="gap-4">
+                <h3 class="font-bold mb-2">
+                    <span id="emocionDetectada" class="text-xl font-normal"></span>
+                </h3>
+
+            </div>
+            
+        </div>
+
         <div>
-        <button class="material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Permitir acceso a la cámara" id="permissions-button">video_camera_front</button>
-        <button class= "material-icons rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white p-4" title="Tiempo real" id="btnTiempoReal">face_retouching_natural</button>
-        ${exerciseButton()}
+        
+            <button class= "rounded-xl bg-[#5881aa] hover:bg-[#73a1ca] text-white p-4" title="Tiempo real" id="btnTiempoReal">Reiniciar detector facial</button>
+            ${exerciseButton()}
         </div>
 
         ${exercisePanel()}
@@ -41,38 +55,7 @@ const display = () => {
         <canvas id="canvas" class="hidden mx-auto my-4 rounded-xl border-4 border-zinc-900"></canvas>
         
 
-        <div class="container mx-auto mt-4">
-            <h2 class="text-xl font-bold mb-2">Resultados de la detección:</h2>
-
-            <div class="gap-4">
-                <h3 class="font-bold mb-2">
-                    <span id="emocionDetectada" class="text-sm font-normal"></span>
-                </h3>
-
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                <div class="border-2 border-zinc-900 rounded-xl p-4">
-                    <h3 class="font-bold mb-2">Landmarks <span id="numPuntos" class="text-sm font-normal"></span></h3>
-                    <div class="h-64 overflow-y-auto bg-gray-100 p-2 rounded border border-gray-300 font-mono text-xs">
-                         <ul id="landmarksList" class="list-none"></ul>
-                    </div>
-                </div>
-
-                <div class="border-2 border-zinc-900 rounded-xl p-4">
-                    <h3 class="font-bold mb-2">Blendshapes <span id="numBlendshapes" class="text-sm font-normal"></span></h3>
-                    <div class="h-64 overflow-y-auto bg-gray-100 p-2 rounded border border-gray-300 font-mono text-xs">
-                        <ul id="blendshapesList" class="list-none"></ul>
-                    </div>
-                </div>
-            </div>
-
-            <details class="text-left mt-4 border-2 border-zinc-900 rounded-xl p-2">
-                <summary class="cursor-pointer font-bold">Ver JSON completo</summary>
-                <div class="bg-gray-100 p-4 rounded border border-gray-300 overflow-x-auto mt-2">
-                    <pre id="resultado" class="text-xs"></pre>
-                </div>
-            </details>
-        </div>
+        
     </div>`;
 };
 
@@ -99,6 +82,7 @@ export const initDisplayLogic = async () => {
     const btnTiempoReal = document.getElementById("btnTiempoReal");
     const btnCalibrar = document.getElementById("ir-calibracion");
     const btnNoCalibrar = document.getElementById("no-calibracion");
+    const divInstrucciones = document.getElementById("divInstrucciones");
 
     
 
@@ -120,8 +104,8 @@ export const initDisplayLogic = async () => {
     if(!isCalibrated()){
         console.error("<AVISO> NO CALIBRADO!")
         textoInstrucciones.innerText = "Es recomendable realizar la calibración antes de continuar.\n¿Quieres proceder con ella?"
-        btnCalibrar.classList.remove("hidden");
-        btnNoCalibrar.classList.remove("hidden");
+        divInstrucciones.classList.remove("hidden");
+        
 
     }
 
@@ -135,6 +119,7 @@ export const initDisplayLogic = async () => {
         })
         .catch((error)  => {
             console.error("Error al acceder a la cámara: ", error);
+            alert("No se pudo acceder a la cámara. Permitela o reinicia la página.");
         });
     }
 
@@ -143,7 +128,7 @@ export const initDisplayLogic = async () => {
         console.log("Llamado a activarTiempoReal")
 
         if(!video.srcObject){
-            alert("Primero debes permitir el acceso a la cámara");
+            alert("No se puede iniciar el detector facial. Conecta una cámara de vídeo.");
             return;
         }
 
@@ -296,8 +281,8 @@ export const initDisplayLogic = async () => {
 
     btnCalibrar.addEventListener('click',(ev) => window.location.hash = "#/calibration")
     btnNoCalibrar.addEventListener('click',(ev)=> {
-        btnCalibrar.classList.add("hidden");
-        btnNoCalibrar.classList.add("hidden");
+        divInstrucciones.classList.add("hidden");
+
         textoInstrucciones.innerText = ""
     })
 
