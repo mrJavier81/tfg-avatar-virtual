@@ -166,8 +166,9 @@ const mostrarCompletado = () => {
 
 const cargarEjercicio = () => {
 
-    if(getIndiceActual() < getTotalEjercicios() - 1){
+    if(getIndiceActual() < getTotalEjercicios()){
         const ejercicio = getEjercicioActual();
+        console.warn("Ejercicio actual: ", ejercicio, getIndiceActual(), getTotalEjercicios() - 1);
         if (!ejercicio) return;
 
 
@@ -234,7 +235,9 @@ export const initExerciseLogic = () => {
             document.getElementById("exCounter").textContent =
                 `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
         }else{
-            btnSiguiente.innerText = "Volver al menú principal"
+            mostrarCompletado();
+            btnSiguiente.classList.add("hidden");
+            btnMenu.classList.remove("hidden");
         }
 
     });
@@ -244,5 +247,9 @@ export const initExerciseLogic = () => {
         cargarEjercicio();
         document.getElementById("exCounter").textContent =
                 `${getIndiceActual() + 1} / ${getTotalEjercicios()}`;
+    })
+
+    btnMenu.addEventListener("click", () => {
+        window.location.hash ="#/";
     })
 };
