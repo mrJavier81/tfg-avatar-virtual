@@ -9,7 +9,7 @@ export const obtenerEmocionAproximada = (results) => {
 
     const blendshapesArray = results.faceBlendshapes[0].categories;
 
-    // Convertir el array a un diccionario para acceso más rápido usando categoryName y score
+    
     const blendshapes = {};
     blendshapesArray.forEach(b => {
         blendshapes[b.categoryName] = b.score;
@@ -27,12 +27,12 @@ export const obtenerEmocionAproximada = (results) => {
         ) / 2,
 
         "Tristeza": (
-            (getBoost("eyeSquintLeft", 1.8) + getBoost("eyeSquintRight", 1.8)) / 2 * 0.35 +  // ← añadir esto
+            (getBoost("eyeSquintLeft", 1.8) + getBoost("eyeSquintRight", 1.8)) / 2 * 0.35 +  
             getBoost("mouthFrownLeft", 2.5) * 0.25 +
             getBoost("mouthFrownRight", 2.5) * 0.25 +
-            getBoost("browInnerUp", 2.0) * 0.15 +   // peso reducido
-            getBoost("mouthShrugLower", 2.0) * 0.15 - // peso reducido
-            // Discriminador: si hay sonrisa, penalizar (eyeSquint también aparece en alegría)
+            getBoost("browInnerUp", 2.0) * 0.15 +   
+            getBoost("mouthShrugLower", 2.0) * 0.15 - 
+           
             (getVal("mouthSmileLeft") + getVal("mouthSmileRight")) / 2 * 0.3
         ),
 
@@ -40,7 +40,7 @@ export const obtenerEmocionAproximada = (results) => {
             getVal("jawOpen") * 0.4 +
             (getVal("browOuterUpLeft") + getVal("browOuterUpRight")) / 2 * 0.3 +
             (getVal("eyeWideLeft") + getVal("eyeWideRight")) / 2 * 0.3
-            // browInnerUp eliminado: no es tan específico de sorpresa
+            
         ),
 
         "Enfado": (
@@ -55,17 +55,17 @@ export const obtenerEmocionAproximada = (results) => {
         ),
 
         "Miedo": (
-            getBoost("browInnerUp", 3.0) * 0.25 +          // peso mayor que en Tristeza
+            getBoost("browInnerUp", 3.0) * 0.25 +          
             (getVal("eyeWideLeft") + getVal("eyeWideRight")) / 2 * 0.25 +
             (getBoost("mouthStretchLeft", 2.5) + getBoost("mouthStretchRight", 2.5)) / 2 * 0.3 +
-            (getVal("cheekSquintLeft") + getVal("cheekSquintRight")) / 2 * 0.2  // nuevo: tensión peri-ocular
+            (getVal("cheekSquintLeft") + getVal("cheekSquintRight")) / 2 * 0.2  
         ),
     };
 
     const tensionBoca = (getVal("mouthStretchLeft") + getVal("mouthStretchRight")) / 2;
     emociones["Sorpresa"] = Math.max(0, emociones["Sorpresa"] - tensionBoca);
     
-    // Determinar la emoción dominante superando un umbral mínimo
+    // Determinar la emocion dominante superando un umbral minimo
     let dominante = "Neutral";
     const scores = Object.values(emociones);
     const media = scores.reduce((a, b) => a + b, 0) / scores.length;
