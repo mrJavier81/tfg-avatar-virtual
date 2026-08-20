@@ -6,7 +6,6 @@
 
 El sistema incorpora una fase de calibración de la expresión neutral. Durante la calibración se calcula la media de los valores de los *blendshapes* observados y, posteriormente, estos valores se utilizan como línea base para normalizar la detección en tiempo real.
 
-> **Alcance actual.** El proyecto implementa una herramienta de detección y práctica de expresiones faciales. No incluye un avatar 3D, un modelo neuronal específico de clasificación emocional ni una validación clínica o psicológica de las emociones detectadas.
 
 ## Objetivos
 
@@ -165,28 +164,6 @@ npm run preview
 5. Iniciar los ejercicios y mantener cada expresión objetivo durante cinco segundos acumulados.
 
 Si el navegador bloquea la cámara, hay que revisar los permisos del sitio y que la cámara no esté siendo utilizada exclusivamente por otra aplicación.
-
-## Limitaciones conocidas
-
-- La línea base neutral se guarda solo en memoria y se pierde al recargar la página.
-- La clasificación emocional se basa en reglas manuales y no ha de considerarse reconocimiento emocional clínico.
-- Solo se procesa una cara por fotograma.
-- El delegado `GPU` se solicita de forma explícita y no existe un mecanismo de configuración para seleccionar CPU desde la interfaz.
-- La aplicación depende de varios recursos externos servidos por CDN.
-- La ruta de reconocimiento independiente aparece preparada en el router, pero actualmente está comentada y no está implementada.
-- `services/mediapipe_example.js` es un ejemplo de referencia y no forma parte del flujo principal de la aplicación.
-- La detención explícita de la cámara al abandonar una vista y la persistencia de la calibración son mejoras pendientes.
-
-## Trabajo futuro
-
-Como líneas de evolución se proponen:
-
-- Persistir la calibración de forma controlada y permitir restablecerla.
-- Añadir gestión del ciclo de vida de las pistas de vídeo al cambiar de ruta.
-- Incorporar una estrategia de fallback cuando no esté disponible la aceleración GPU.
-- Separar la lógica de inferencia en un módulo testeable y añadir pruebas automatizadas.
-- Evaluar la heurística con un conjunto de datos documentado antes de extraer conclusiones sobre su precisión.
-- Implementar la vista de reconocimiento pendiente o un avatar visual que represente los resultados.
 
 ## Autoría
 
